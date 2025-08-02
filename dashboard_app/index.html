@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Sales Dashboard</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 p-8">
+
+    <div class="max-w-7xl mx-auto space-y-8">
+
+        <header class="bg-white p-6 rounded-2xl shadow-lg">
+            <h1 class="text-4xl font-bold text-gray-900">Sales Data Pipeline Dashboard</h1>
+            <p class="mt-2 text-gray-600">Key insights from the sales data engineering pipeline.</p>
+        </header>
+
+        <!-- Loading indicator -->
+        <div id="loading" class="bg-white p-6 rounded-2xl shadow-lg flex items-center space-x-4">
+            <svg class="animate-spin h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="text-lg text-gray-500">Loading data and building charts...</p>
+        </div>
+
+        <div id="dashboard-content" class="space-y-8 hidden">
+            
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Monthly Sales Summary -->
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h2 class="text-2xl font-semibold mb-4">Monthly Sales Summary</h2>
+                    <div class="chart-container">
+                        <canvas id="monthlySalesChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h2 class="text-2xl font-semibold mb-4">Sales by Region</h2>
+                    <div class="chart-container">
+                        <canvas id="regionSalesChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-white p-6 rounded-2xl shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4">Top 10 Products by Revenue</h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead>
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rank</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Revenue</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody id="topProductsTable" class="bg-white divide-y divide-gray-200">
+                            <!-- Table rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Category Discount Map -->
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h2 class="text-2xl font-semibold mb-4">Average Discount by Category</h2>
+                    <div class="chart-container">
+                        <canvas id="categoryDiscountChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Anomaly Records -->
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h2 class="text-2xl font-semibold mb-4">Top 5 High-Revenue Anomalies</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead>
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="anomalyRecordsTable" class="bg-white divide-y divide-gray-200">
+                                <!-- Table rows will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Chart.js CDN for plotting -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loadingIndicator = document.getElementById('loading');
+            const dashboardContent = document.getElementById('dashboard-content');
+            
+            // Helper function to fetch and parse a CSV file, returning an array of objects
+            async function fetchCsv(url) {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch ${url}: ${response.statusText}`);
+                }
+                const text = await response.text();
+                const rows = text.split('\n').filter(row => row.trim() !== '');
+                if (rows.length < 2) {
+                    return [];
+                }
+                const headers = rows[0].split(',').map(header => header.trim());
+                return rows.slice(1).map(row => {
+                    const columns = row.split(',');
+                    let obj = {};
+                    headers.forEach((header, index) => {
+                        let value = columns[index] ? columns[index].trim() : null;
+                        // Attempt to parse numbers
+                        if (!isNaN(parseFloat(value)) && isFinite(value)) {
+                            value = parseFloat(value);
+                        }
+                        obj[header] = value;
+                    });
+                    return obj;
+                });
+            }
+
+            async function renderDashboard() {
+                try {
+                    // Fetch all required data files with the corrected relative path
+                    const monthlySales = await fetchCsv('transformed_data/monthly_sales_summary.csv');
+                    const topProducts = await fetchCsv('transformed_data/top_products.csv');
+                    const regionSales = await fetchCsv('transformed_data/region_wise_performance.csv');
+                    const categoryDiscounts = await fetchCsv('transformed_data/category_discount_map.csv');
+                    const anomalyRecords = await fetchCsv('transformed_data/anomaly_records.csv');
+
+                    // 1. Render Monthly Sales Chart
+                    const monthlySalesCtx = document.getElementById('monthlySalesChart').getContext('2d');
+                    new Chart(monthlySalesCtx, {
+                        type: 'line',
+                        data: {
+                            labels: monthlySales.map(row => row.month),
+                            datasets: [{
+                                label: 'Monthly Revenue',
+                                data: monthlySales.map(row => row.revenue),
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false }, title: { display: false } },
+                            scales: {
+                                y: { beginAtZero: true, grid: { color: 'rgba(0, 0, 0, 0.05)' } },
+                                x: { grid: { display: false } }
+                            }
+                        }
+                    });
+
+                    // 2. Render Region Sales Chart
+                    const regionSalesCtx = document.getElementById('regionSalesChart').getContext('2d');
+                    new Chart(regionSalesCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: regionSales.map(row => row.region),
+                            datasets: [{
+                                label: 'Revenue by Region',
+                                data: regionSales.map(row => row.revenue),
+                                backgroundColor: [
+                                    'rgba(153, 102, 255, 0.6)',
+                                    'rgba(255, 159, 64, 0.6)',
+                                    'rgba(255, 99, 132, 0.6)',
+                                    'rgba(54, 162, 235, 0.6)'
+                                ],
+                                borderColor: [
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)',
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false }, title: { display: false } },
+                            scales: { y: { beginAtZero: true, grid: { color: 'rgba(0, 0, 0, 0.05)' } } }
+                        }
+                    });
+
+                    // 3. Populate Top Products Table
+                    const topProductsTableBody = document.getElementById('topProductsTable');
+                    topProductsTableBody.innerHTML = '';
+                    topProducts.forEach((row, index) => {
+                        const tr = document.createElement('tr');
+                        tr.className = 'hover:bg-gray-50';
+                        tr.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap">${index + 1}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${row.product_name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${row.revenue.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${row.quantity}</td>
+                        `;
+                        topProductsTableBody.appendChild(tr);
+                    });
+
+                    // 4. Render Category Discount Chart
+                    const categoryDiscountCtx = document.getElementById('categoryDiscountChart').getContext('2d');
+                    new Chart(categoryDiscountCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: categoryDiscounts.map(row => row.category),
+                            datasets: [{
+                                label: 'Average Discount (%)',
+                                data: categoryDiscounts.map(row => (row.avg_discount * 100).toFixed(2)), // Convert to percentage
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.6)',
+                                    'rgba(54, 162, 235, 0.6)',
+                                    'rgba(255, 206, 86, 0.6)',
+                                    'rgba(75, 192, 192, 0.6)',
+                                    'rgba(153, 102, 255, 0.6)',
+                                    'rgba(255, 159, 64, 0.6)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { position: 'right' },
+                                title: { display: false }
+                            }
+                        }
+                    });
+                    
+                    // 5. Populate Anomaly Records Table
+                    const anomalyTableBody = document.getElementById('anomalyRecordsTable');
+                    anomalyTableBody.innerHTML = '';
+                    anomalyRecords.forEach(row => {
+                        const tr = document.createElement('tr');
+                        tr.className = 'hover:bg-gray-50';
+                        tr.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap">${row.order_id}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${row.product_name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${row.revenue.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${row.sale_date}</td>
+                        `;
+                        anomalyTableBody.appendChild(tr);
+                    });
+
+                    // Hide loading indicator and show dashboard
+                    loadingIndicator.classList.add('hidden');
+                    dashboardContent.classList.remove('hidden');
+
+                } catch (error) {
+                    console.error('Error rendering dashboard:', error);
+                    loadingIndicator.innerHTML = `
+                        <div class="bg-red-50 border border-red-200 p-4 rounded-lg">
+                            <h3 class="text-red-800 font-semibold">Error: Could not load data</h3>
+                            <p class="text-red-600 mt-2">Please ensure you have:</p>
+                            <ul class="text-red-600 mt-1 ml-4 list-disc">
+                                <li>Run the pipeline script first: <code class="bg-red-100 px-1 rounded">python main.py</code></li>
+                                <li>Started a local web server for this directory</li>
+                                <li>All CSV files are generated in the transformed_data/ folder</li>
+                            </ul>
+                            <p class="text-red-600 mt-2 text-sm">Error details: ${error.message}</p>
+                        </div>
+                    `;
+                }
+            }
+
+            renderDashboard();
+        });
+    </script>
+
+</body>
+</html>

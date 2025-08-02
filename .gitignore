@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pytest_cache*
+
+# Virtual environments
+.venv/
+venv/
+.env
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Operating System
+.DS_Store
+Thumbs.db
+
+# Project-specific data files
+# Generated CSV data files (but keep directory structure)
+data/raw/*.csv
+data/processed/*.csv
+data/processed/*.json
+data/processed/*.md
+data/job_metadata.json
+
+# Dashboard generated data
+dashboard_app/transformed_data/*.csv
+dashboard_app/transformed_data/*.json
+dashboard_app/transformed_data/*.md
+
+# Log files
+logs/*.log
+
+# Test files
+*.csv
+large_sales_data.csv
+
+# Keep directory structure with .gitkeep files
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+data/processed/
+!dashboard_app/transformed_data/.gitkeep
+!logs/.gitkeep
+

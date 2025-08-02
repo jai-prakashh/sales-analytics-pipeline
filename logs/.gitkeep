@@ -1,0 +1,2 @@
+# This file ensures the logs directory is preserved in Git
+# Log files will be ignored but the directory structure is maintained

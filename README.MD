@@ -6,24 +6,23 @@ This project implements a production-ready, scalable data engineering pipeline t
 
 ## 📋 Table of Contents
 
-1. [🏗️ Project Structure](#-project-structure)
-2. [🚀 Quick Start & Validation](#-quick-start--validation)
-3. [📡 API Reference](#-api-reference)
-4. [📊 Architecture & Scalability](#-architecture--scalability)
-5. [🧪 Testing](#-testing)
-6. [📈 Data Cleaning Rules](#-data-cleaning-rules)
-7. [📊 Generated Analytics](#-generated-analytics)
-8. [🎨 Dashboard Features](#-dashboard-features)
-9. [⚡ Performance Characteristics](#-performance-characteristics)
-10. [🔧 Configuration](#-configuration)
-11. [🐛 Troubleshooting](#-troubleshooting)
-12. [🚀 Future Enhancements](#-future-enhancements)
-13. [🏆 Project Compliance](#-project-compliance)
-14. [📚 Additional Resources](#-additional-resources)
-15. [📸 Screenshots](#-screenshots)
-16. [📝 License](#-license)
-17. [👤 Author](#-author)
-18. [🙏 Acknowledgments](#-acknowledgments)
+1. [🏗️ Project Structure](#project-structure)
+2. [🚀 Quick Start & Validation](#quick-start--validation)
+3. [📡 API Reference](#api-reference)
+4. [📊 Architecture & Scalability](#architecture--scalability)
+5. [🧪 Testing](#testing)
+6. [📈 Data Cleaning Rules](#data-cleaning-rules)
+7. [📊 Generated Analytics](#generated-analytics)
+8. [🎨 Dashboard Features](#dashboard-features)
+9. [⚡ Performance Characteristics](#performance-characteristics)
+10. [🔧 Configuration](#configuration)
+11. [🐛 Troubleshooting](#troubleshooting)
+12. [🚀 Future Enhancements](#future-enhancements)
+13. [🏆 Project Compliance](#project-compliance)
+14. [📚 Additional Resources](#additional-resources)
+15. [📸 Screenshots](#screenshots)
+16. [📝 License](#license)
+17. [👤 Author](#author)
 
 ## 🏗️ Project Structure
 
@@ -670,9 +669,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **Jai Prakash**
 - GitHub: [@jai-prakashh](https://github.com/jai-prakashh)
 - Repository: [sales-analytics-pipeline](https://github.com/jai-prakashh/sales-analytics-pipeline)
-
-## 🙏 Acknowledgments
-
-- Built as part of Data Engineering coursework
-- Demonstrates scalable data processing without distributed frameworks
-- Focuses on production-ready architecture and user experience

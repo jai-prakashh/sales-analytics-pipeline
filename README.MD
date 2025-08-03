@@ -118,7 +118,7 @@ curl http://localhost:8000/jobs                        # List all jobs
 curl http://localhost:8000/health                      # Check server health
 ```
 
-> **📋 For comprehensive testing options, see the [🧪 Testing](#testing) section below.**
+> **📋 For comprehensive testing options, see the [🧪 Testing](#-testing) section below.**
 
 **📋 When to use which:**
 - **Use `api_server.py`** for: Web integration, multiple users, production deployments, dashboard access

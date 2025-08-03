@@ -714,3 +714,7 @@ This project exceeds all requirements with modern production-ready features:
 ## Dashboard Image
 
 ![Alternative Text](dashboard_app/dashboard.png)
+
+![Alternative Text](dashboard_app/job-dashboard.png)
+
+![Alternative Text](dashboard_app/dashboard-view.png)

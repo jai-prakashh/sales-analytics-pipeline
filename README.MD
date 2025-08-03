@@ -6,7 +6,7 @@ This project implements a production-ready, scalable data engineering pipeline t
 
 ## 📋 Table of Contents
 
-1. [🏗️ Project Structure](#-project-structure)
+1. [📁 Project Structure](#-project-structure)
 2. [🚀 Quick Start & Validation](#-quick-start--validation)
 3. [📡 API Reference](#-api-reference)
 4. [📊 Architecture & Scalability](#-architecture--scalability)
@@ -24,7 +24,7 @@ This project implements a production-ready, scalable data engineering pipeline t
 16. [📝 License](#-license)
 17. [👤 Author](#-author)
 
-## 🏗️ Project Structure
+## 📁 Project Structure
 
 ```
 ├── main.py                        # Main entry point (script mode)

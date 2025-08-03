@@ -1,4 +1,19 @@
-# Scalable Data Engineering Pipeline + Dashboard
+# Scal## 📋 Table of Contents
+
+1. [🏗️ Project Structure](#️-project-structure)
+2. [🚀 Quick Start & Validation](#-quick-start--validation)
+3. [📡 API Reference](#-api-reference)
+4. [📊 Architecture & Scalability](#-architecture--scalability)
+5. [🧪 Testing](#-testing)
+6. [📈 Data Cleaning Rules](#-data-cleaning-rules)
+7. [📊 Generated Analytics](#-generated-analytics)
+8. [🎨 Dashboard Features](#-dashboard-features)
+9. [⚡ Performance Characteristics](#-performance-characteristics)
+10. [🔧 Configuration](#-configuration)
+11. [🐛 Troubleshooting](#-troubleshooting)
+12. [🚀 Future Enhancements](#-future-enhancements)
+13. [🏆 Project Compliance](#-project-compliance)
+14. [📸 Screenshots](#-screenshots)ring Pipeline + Dashboard
 
 This project implements a production-ready, scalable data engineering pipeline to process large, messy sales datasets and generate key business insights. The solution is designed to be memory-efficient, modular, and maintainable without using distributed frameworks.
 
@@ -7,21 +22,20 @@ This project implements a production-ready, scalable data engineering pipeline t
 ## 📋 Table of Contents
 
 1. [🏗️ Project Structure](#️-project-structure)
-2. [🚀 Quick Start](#-quick-start)
-3. [🚀 Unified Server (All-in-One Solution)](#-unified-server-all-in-one-solution)
-4. [📡 API Reference](#-api-reference)
-5. [📊 Architecture & Scalability](#-architecture--scalability)
-6. [🧪 Testing](#-testing)
-7. [📈 Data Cleaning Rules](#-data-cleaning-rules)
-8. [📊 Generated Analytics](#-generated-analytics)
-9. [🎨 Dashboard Features](#-dashboard-features)
-10. [⚡ Performance Characteristics](#-performance-characteristics)
-11. [🔧 Configuration](#-configuration)
-12. [🐛 Troubleshooting](#-troubleshooting)
-13. [🔄 Workflow Comparison](#-workflow-comparison)
-14. [🚀 Future Enhancements](#-future-enhancements)
-15. [🏆 Project Compliance](#-project-compliance)
-16. [📚 Additional Resources](#-additional-resources)
+2. [🚀 Quick Start & Validation](#-quick-start--validation)
+3. [📡 API Reference](#-api-reference)
+4. [📊 Architecture & Scalability](#-architecture--scalability)
+5. [🧪 Testing](#-testing)
+6. [📈 Data Cleaning Rules](#-data-cleaning-rules)
+7. [📊 Generated Analytics](#-generated-analytics)
+8. [🎨 Dashboard Features](#-dashboard-features)
+9. [⚡ Performance Characteristics](#-performance-characteristics)
+10. [🔧 Configuration](#-configuration)
+11. [🐛 Troubleshooting](#-troubleshooting)
+12. [ Future Enhancements](#-future-enhancements)
+13. [🏆 Project Compliance](#-project-compliance)
+14. [� Screenshots](#-screenshots)
+15. [🎯 Assignment Completion Summary](#-assignment-completion-summary)
 
 ## 🏗️ Project Structure
 
@@ -64,10 +78,16 @@ This project implements a production-ready, scalable data engineering pipeline t
     └── pipeline.log            # Processing logs
 ```
 
-## 🚀 Quick Start
+## 🚀 Quick Start & Validation
+
+**Prerequisites**: Python 3.8+ required
 
 ### 1. Setup Environment
 ```bash
+# Clone and setup
+git clone https://github.com/jai-prakashh/sales-analytics-pipeline.git
+cd sales-analytics-pipeline
+
 # Create virtual environment (recommended)
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
@@ -76,80 +96,50 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 2. Start Unified Server (RECOMMENDED) 🚀
+### 2. Start Server (RECOMMENDED) 🚀
 ```bash
 # Start the unified server that handles everything
 python api_server.py
 
-# This provides:
-# - API endpoints at http://localhost:8000
-# - Dashboard at http://localhost:8000/dashboard/
-# - API docs at http://localhost:8000/docs
+# Access:
+# - Dashboard: http://localhost:8000/dashboard/
+# - API docs: http://localhost:8000/docs
+# - API endpoints: http://localhost:8000
 ```
 
-### 3. Alternative: Run Pipeline Directly (CLI Mode)
+### 3. Alternative: CLI Mode
 ```bash
-# Run basic pipeline (10K records) - CLI script mode
+# Run basic pipeline (10K records)
 python main.py
 
-# Run large scale test - CLI script mode
+# Run large scale test  
 python scripts/run_large_scale_test.py 100000
+```
+
+### 4. Validation & Testing
+```bash
+# Method 1: Start server manually, then run tests
+# Terminal 1: Start API server
+python api_server.py
+
+# Terminal 2: Run all tests
+python -m pytest tests/ -v
+# OR
+python -m unittest discover tests/ -v
+
+# Test API endpoints
+curl -X POST http://localhost:8000/run-pipeline        # Generate and process data
+curl http://localhost:8000/jobs                        # List all jobs
+curl http://localhost:8000/health                      # Check server health
 ```
 
 **📋 When to use which:**
 - **Use `api_server.py`** for: Web integration, multiple users, production deployments, dashboard access
 - **Use `main.py`** for: Quick data processing, batch jobs, development testing, single-user scenarios
 
-### 4. Use the API Interface
-```bash
-# Run pipeline via API
-curl -X POST http://localhost:8000/run-pipeline
-
-# Run large scale test via API  
-curl -X POST "http://localhost:8000/run-large-scale-test?num_rows=100000"
-
-# Upload custom file
-curl -X POST -F "file=@your_data.csv" http://localhost:8000/upload
-
-# Check job status (persists across restarts)
-curl http://localhost:8000/status/{job_id}
-
-# List all jobs (includes previously processed data)
-curl http://localhost:8000/jobs
-```
-
 > **💾 Job Persistence**: All jobs are automatically saved and survive server restarts. Previous jobs are discovered from existing data on startup.
 
-### 5. Run Tests
-```bash
-python -m unittest discover tests/ -v
-```
-
-## 🚀 Unified Server (All-in-One Solution)
-
-The project features a **unified server** that handles all functionality in a single process - no more juggling multiple servers or processes!
-
-### ✅ What's Integrated
-- **🌐 REST API** - Complete API endpoints for pipeline operations
-- **📊 Dashboard** - Interactive web dashboard served directly
-- **🔄 Pipeline Execution** - Run `main.py` functionality via API
-- **📈 Large Scale Tests** - Run `run_large_scale_test.py` via API
-- **📁 File Upload** - Upload and process custom CSV files
-- **📋 Job Management** - Real-time job tracking and monitoring
-- **💾 Persistent Storage** - Jobs survive server restarts with automatic discovery
-
-### 🎯 Quick Start (Recommended)
-```bash
-# Start the unified server (handles everything)
-python api_server.py
-
-# Access everything from one URL:
-# - API endpoints: http://localhost:8000
-# - Dashboard: http://localhost:8000/dashboard/
-# - API docs: http://localhost:8000/docs
-```
-
-## 📡 API Reference
+##  API Reference
 
 ### Core Endpoints
 
@@ -294,72 +284,6 @@ curl "http://localhost:8000/jobs?status=completed&limit=10"
   ],
   "total_count": 1,
   "filtered_count": 1
-}
-```
-
-### 🌐 Dashboard Access
-
-The dashboard is served directly from the API server:
-
-```bash
-# Access dashboard in browser
-open http://localhost:8000/dashboard/
-
-# Dashboard features:
-# - 📈 Monthly revenue trends
-# - 🥧 Regional sales distribution  
-# - 📊 Top products charts
-# - 🎯 Category discount analysis
-# - 🚨 Anomaly detection table
-# - 📱 Mobile-responsive design
-```
-
-### 🔧 API Integration Examples
-
-#### Python Integration
-```python
-import requests
-import time
-
-# Start pipeline
-response = requests.post("http://localhost:8000/run-pipeline")
-job_id = response.json()["job_id"]
-
-# Monitor progress
-while True:
-    status = requests.get(f"http://localhost:8000/status/{job_id}")
-    job_status = status.json()["status"]
-    
-    if job_status == "completed":
-        results = status.json()["results"]
-        print(f"Processed {results['processing_stats']['records_processed']} records")
-        break
-    elif job_status == "failed":
-        print("Pipeline failed!")
-        break
-    
-    time.sleep(2)
-```
-
-#### JavaScript/Node.js Integration
-```javascript
-// Start pipeline
-const response = await fetch('http://localhost:8000/run-pipeline', {
-  method: 'POST'
-});
-const job = await response.json();
-
-// Monitor progress
-const jobId = job.job_id;
-let status = 'queued';
-
-while (status !== 'completed' && status !== 'failed') {
-  const statusResponse = await fetch(`http://localhost:8000/status/${jobId}`);
-  const statusData = await statusResponse.json();
-  status = statusData.status;
-  
-  console.log(`Job status: ${status}`);
-  await new Promise(resolve => setTimeout(resolve, 2000));
 }
 ```
 
@@ -708,13 +632,34 @@ This project exceeds all requirements with modern production-ready features:
 - **Testing**: Unit tests with edge case coverage
 - **Performance**: Benchmarking and optimization guides  
 - **Deployment**: Scripts for easy setup and validation
-- **API Integration**: Complete REST API with interactive documentation
 - **Real-time Monitoring**: Background job processing with status tracking
 
-## Dashboard Image
+## 📸 Screenshots
 
-![Alternative Text](dashboard_app/dashboard.png)
+### Main Interactive Dashboard
+![Sales Analytics Dashboard](dashboard_app/dashboard.png)
+*Interactive dashboard showing monthly revenue trends, regional performance, and top products with responsive charts*
 
-![Alternative Text](dashboard_app/job-dashboard.png)
+### Job-Specific Dashboard  
+![Job Dashboard](dashboard_app/job-dashboard.png)
+*Job-specific analytics view with detailed insights for individual pipeline runs*
 
-![Alternative Text](dashboard_app/dashboard-view.png)
+### Job Summary View
+![Dashboard View](dashboard_app/dashboard-view.png)
+*Job summary page with key metrics, download links, and processing statistics*
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 👤 Author
+
+**Jai Prakash**
+- GitHub: [@jai-prakashh](https://github.com/jai-prakashh)
+- Repository: [sales-analytics-pipeline](https://github.com/jai-prakashh/sales-analytics-pipeline)
+
+## 🙏 Acknowledgments
+
+- Built as part of Data Engineering coursework
+- Demonstrates scalable data processing without distributed frameworks
+- Focuses on production-ready architecture and user experience

@@ -212,5 +212,99 @@ class TestDataPipeline(unittest.TestCase):
         expected_revenue = 100 * 100.0 * 0.9  # 100 records * $100 * (1-0.1 discount)
         self.assertAlmostEqual(total_revenue, expected_revenue)
 
+    def test_cleaner_missing_fields(self):
+        """
+        Tests cleaning logic with missing required fields.
+        """
+        incomplete_record = {
+            'order_id': 'ORD-12345',
+            'product_name': 'Test Product',
+            # Missing category, quantity, unit_price, etc.
+        }
+        
+        cleaned_record = self.cleaner.clean_record(incomplete_record)
+        # Should handle missing fields gracefully (may return None or default values)
+        # This tests robustness of the cleaning logic
+        if cleaned_record is not None:
+            # If it handles missing fields, check that it has reasonable defaults
+            self.assertIn('category', cleaned_record)
+            self.assertIn('quantity', cleaned_record)
+
+    def test_cleaner_product_name_standardization(self):
+        """
+        Tests product name standardization with various formats.
+        """
+        product_tests = [
+            ('laptop pro', 'Laptop Pro 15'),
+            ('LAPTOP PRO', 'Laptop Pro 15'),
+            ('  laptop pro  ', 'Laptop Pro 15'),
+            ('smartfone x', 'Smartphone X'),
+            ('wireless headphones', 'Wireless Headphones'),
+            ('unknown product', 'Unknown Product')  # Should title case unknown products
+        ]
+        
+        for input_val, expected in product_tests:
+            result = self.cleaner._standardize_string(input_val, self.cleaner.PRODUCT_NAME_MAP)
+            self.assertEqual(result, expected, f"Failed for product: {input_val}")
+
+    def test_cleaner_email_validation(self):
+        """
+        Tests email field handling.
+        """
+        test_record = {
+            'order_id': 'ORD-001',
+            'product_name': 'Test Product',
+            'category': 'Electronics',
+            'quantity': '1',
+            'unit_price': 100.0,
+            'discount_percent': 0.1,
+            'region': 'North',
+            'sale_date': '2024-01-01',
+            'customer_email': 'invalid-email'  # Invalid email format
+        }
+        
+        cleaned_record = self.cleaner.clean_record(test_record)
+        # Should handle invalid email gracefully
+        self.assertIsNotNone(cleaned_record)  # Record should still be processed
+        self.assertIn('customer_email', cleaned_record)
+
+    def test_aggregator_empty_chunk(self):
+        """
+        Tests aggregator behavior with empty chunks.
+        """
+        empty_chunk = []
+        self.aggregator.process_chunk(empty_chunk)
+        self.aggregator.finalize_aggregations()
+        
+        # Should handle empty chunks without errors
+        self.assertEqual(len(self.aggregator.product_sales), 0)
+        self.assertEqual(len(self.aggregator.monthly_sales), 0)
+        self.assertEqual(len(self.aggregator.region_sales), 0)
+
+    def test_aggregator_duplicate_orders(self):
+        """
+        Tests aggregator behavior with duplicate order IDs.
+        """
+        duplicate_chunk = [
+            {
+                'order_id': 'ORD-001', 'product_name': 'Product A', 'category': 'Electronics',
+                'quantity': 1, 'unit_price': 100.0, 'discount_percent': 0.1,
+                'region': 'North', 'sale_date': datetime(2024, 1, 1), 'customer_email': 'test@example.com',
+                'revenue': 90.0
+            },
+            {
+                'order_id': 'ORD-001', 'product_name': 'Product A', 'category': 'Electronics', 
+                'quantity': 1, 'unit_price': 100.0, 'discount_percent': 0.1,
+                'region': 'North', 'sale_date': datetime(2024, 1, 1), 'customer_email': 'test@example.com',
+                'revenue': 90.0
+            }
+        ]
+        
+        self.aggregator.process_chunk(duplicate_chunk)
+        self.aggregator.finalize_aggregations()
+        
+        # Should handle duplicates appropriately (sum revenues or detect duplicates)
+        self.assertGreater(len(self.aggregator.product_sales), 0)
+
 if __name__ == '__main__':
     unittest.main()

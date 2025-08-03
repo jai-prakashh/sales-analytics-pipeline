@@ -1,10 +1,12 @@
+# 📊 Sales Analytics Pipeline
+
 This project implements a production-ready, scalable data engineering pipeline to process large, messy sales datasets and generate key business insights. The solution is designed to be memory-efficient, modular, and maintainable without using distributed frameworks.
 
 > **🚀 UNIFIED SERVER:** Everything now runs from a single server process (`api_server.py`) - no need for separate HTTP servers or multiple processes. Start one server and get API endpoints, dashboard, and all pipeline functionality integrated!
 
 ## 📋 Table of Contents
 
-1. [🏗️ Project Structure](#️-project-structure)
+1. [🏗️ Project Structure](#-project-structure)
 2. [🚀 Quick Start & Validation](#-quick-start--validation)
 3. [📡 API Reference](#-api-reference)
 4. [📊 Architecture & Scalability](#-architecture--scalability)
@@ -15,10 +17,13 @@ This project implements a production-ready, scalable data engineering pipeline t
 9. [⚡ Performance Characteristics](#-performance-characteristics)
 10. [🔧 Configuration](#-configuration)
 11. [🐛 Troubleshooting](#-troubleshooting)
-12. [ Future Enhancements](#-future-enhancements)
+12. [🚀 Future Enhancements](#-future-enhancements)
 13. [🏆 Project Compliance](#-project-compliance)
-14. [� Screenshots](#-screenshots)
-15. [🎯 Assignment Completion Summary](#-assignment-completion-summary)
+14. [📚 Additional Resources](#-additional-resources)
+15. [📸 Screenshots](#-screenshots)
+16. [📝 License](#-license)
+17. [👤 Author](#-author)
+18. [🙏 Acknowledgments](#-acknowledgments)
 
 ## 🏗️ Project Structure
 
@@ -105,9 +110,7 @@ python scripts/run_large_scale_test.py 100000
 # Terminal 1: Start API server
 python api_server.py
 
-# Terminal 2: Run all tests
-python -m pytest tests/ -v
-# OR
+# Terminal 2: Run quick validation tests
 python -m unittest discover tests/ -v
 
 # Test API endpoints
@@ -116,13 +119,15 @@ curl http://localhost:8000/jobs                        # List all jobs
 curl http://localhost:8000/health                      # Check server health
 ```
 
+> **📋 For comprehensive testing options, see the [🧪 Testing](#-testing) section below.**
+
 **📋 When to use which:**
 - **Use `api_server.py`** for: Web integration, multiple users, production deployments, dashboard access
 - **Use `main.py`** for: Quick data processing, batch jobs, development testing, single-user scenarios
 
 > **💾 Job Persistence**: All jobs are automatically saved and survive server restarts. Previous jobs are discovered from existing data on startup.
 
-##  API Reference
+## 📡 API Reference
 
 ### Core Endpoints
 
@@ -378,27 +383,52 @@ The system automatically discovers existing jobs by:
 
 ## 🧪 Testing
 
-### Run Unit Tests
+### Unit & Integration Tests
 ```bash
-# Run all tests directly with Python
+# Run all tests with verbose output
 python -m unittest discover tests/ -v
 
-# Run specific test files
-python tests/test_pipeline.py
-python tests/test_api_integration.py
+# Run specific test suites
+python tests/test_pipeline.py              # Core pipeline tests
+python tests/test_api_integration.py       # API integration tests
 
-# Alternative: Run with pytest if installed
-python -m pytest tests/ -v
+# Alternative: Run with pytest (if installed)
+python -m pytest tests/ -v                 # All tests
+python -m pytest tests/test_pipeline.py -v # Specific file
+```
 
+### API Testing
+```bash
+# Start server first (in separate terminal)
+python api_server.py
+
+# Test core endpoints
+curl -X GET http://localhost:8000/health
+curl -X POST http://localhost:8000/run-pipeline
+curl -X GET http://localhost:8000/jobs
+
+# Test file upload
+curl -X POST http://localhost:8000/upload \
+     -F "file=@data/raw/sales_data.csv" \
+     -F "chunk_size=1000"
 ```
 
 ### Large Scale Testing
 ```bash
 # Test with different dataset sizes
-python scripts/run_large_scale_test.py 100000    # 100K records
-python scripts/run_large_scale_test.py 1000000   # 1M records
-python scripts/run_large_scale_test.py 10000000  # 10M records (requires ~2GB RAM)
+python scripts/run_large_scale_test.py 100000    # 100K records (~2 seconds)
+python scripts/run_large_scale_test.py 1000000   # 1M records (~20 seconds)
+python scripts/run_large_scale_test.py 10000000  # 10M records (~3-4 minutes, requires ~2GB RAM)
 ```
+
+### Test Coverage
+The test suite covers:
+- ✅ **Data Ingestion**: Chunked reading, error handling, encoding
+- ✅ **Data Cleaning**: Validation rules, quality metrics, edge cases  
+- ✅ **Data Transformation**: Aggregations, calculations, memory efficiency
+- ✅ **API Endpoints**: All REST operations, error responses, job management
+- ✅ **Job Persistence**: Metadata storage, job discovery, state management
+- ✅ **Performance**: Memory usage, throughput, scalability limits
 
 ## 📈 Data Cleaning Rules
 
@@ -539,7 +569,7 @@ config.input_file = "data/raw/custom_data.csv"
 - Use the performance monitor to optimize chunk sizes
 - Test with smaller datasets first before scaling up
 
-##  Future Enhancements
+## 🚀 Future Enhancements
 
 ### Completed ✅
 - **✅ Unified Server**: Single process handles API + Dashboard

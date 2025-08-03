@@ -1,20 +1,3 @@
-# Scal## 📋 Table of Contents
-
-1. [🏗️ Project Structure](#️-project-structure)
-2. [🚀 Quick Start & Validation](#-quick-start--validation)
-3. [📡 API Reference](#-api-reference)
-4. [📊 Architecture & Scalability](#-architecture--scalability)
-5. [🧪 Testing](#-testing)
-6. [📈 Data Cleaning Rules](#-data-cleaning-rules)
-7. [📊 Generated Analytics](#-generated-analytics)
-8. [🎨 Dashboard Features](#-dashboard-features)
-9. [⚡ Performance Characteristics](#-performance-characteristics)
-10. [🔧 Configuration](#-configuration)
-11. [🐛 Troubleshooting](#-troubleshooting)
-12. [🚀 Future Enhancements](#-future-enhancements)
-13. [🏆 Project Compliance](#-project-compliance)
-14. [📸 Screenshots](#-screenshots)ring Pipeline + Dashboard
-
 This project implements a production-ready, scalable data engineering pipeline to process large, messy sales datasets and generate key business insights. The solution is designed to be memory-efficient, modular, and maintainable without using distributed frameworks.
 
 > **🚀 UNIFIED SERVER:** Everything now runs from a single server process (`api_server.py`) - no need for separate HTTP servers or multiple processes. Start one server and get API endpoints, dashboard, and all pipeline functionality integrated!
